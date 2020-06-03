@@ -1,7 +1,7 @@
 {
-  "name": "doman-react-boilerplate",
+  "name": "converter-react",
   "version": "1.0.0",
-  "description": "Boilerplate for frontend projects configured for React library and using more valuable tools for development",
+  "description": "Konwerter liczb całkowitych i rzeczywistych (zapis zmiennopozycyjny) na i z postaci binarnej z implementacją podstawowych operacji",
   "main": "index.ts",
   "scripts": {
     "start": "webpack-dev-server --mode=development",
