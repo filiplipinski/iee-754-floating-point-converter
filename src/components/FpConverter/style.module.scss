@@ -15,14 +15,13 @@
   &__labeled-input {
     display: flex;
     flex-direction: column;
-    width: 200px;
     margin: 1em;
   }
 
   &__buttons-container {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: center;
 
     button {
       padding: 2px;
@@ -44,10 +43,23 @@
   }
 
   &__iee754-representation {
-    background-color: lightblue;
+    display: flex;
 
-    .exponent {
-      margin-left: 2em;
+    .results {
+      flex: 1 1 auto;
+      padding: 1em;
+
+      .exponent {
+        margin-left: 2em;
+      }
+    }
+
+    .to-bin {
+      background-color: lightblue;
+    }
+
+    .to-dec {
+      background-color: lightcoral;
     }
   }
 }

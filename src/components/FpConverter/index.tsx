@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent } from "react";
 import { default as bemCssModules } from "bem-css-modules";
 import { default as ContentStyles } from "./style.module.scss";
-import { decToBinary, decDecimalPartToBin } from "../../utils/convertNumberSystem";
+import { decToBinary, binaryToDec, decDecimalPartToBin, binDecimalToDec } from "../../utils/convertNumberSystem";
 
 const style = bemCssModules(ContentStyles);
 
@@ -13,14 +13,20 @@ type IEEE754representation = {
     powerTo: number;
   };
   mantissa?: {
-    bin: string;
+    bin?: string;
+    dec?: number;
   };
 };
 
 const FpConverter: React.FC = () => {
   const [decValue, setDecValue] = useState("");
   const [binValue, setBinValue] = useState("");
-  const [IEEE754representation, setIEEE754] = useState<IEEE754representation>({
+  const [IEEE754representationToBin, setIEEE754ToBin] = useState<IEEE754representation>({
+    sign: undefined,
+    exponent: undefined,
+    mantissa: undefined,
+  });
+  const [IEEE754representationToDec, setIEEE754ToDec] = useState<IEEE754representation>({
     sign: undefined,
     exponent: undefined,
     mantissa: undefined,
@@ -33,11 +39,9 @@ const FpConverter: React.FC = () => {
 
     if (e.target.id === "dec") {
       setDecValue(value);
-      // setBinValue(decToBinaryFP(value));
     } else if (e.target.id === "bin") {
       if (only0and1.test(value) && maxLength32.test(value)) {
         setBinValue(value);
-        // setDecValue(binaryToDecFP(value));
       }
     }
   };
@@ -51,15 +55,11 @@ const FpConverter: React.FC = () => {
 
     const [wholePortion, decimalPortion] = entryDecValue.split(".");
 
-    // CHECK jezeli nie jest z przecinkiem
-    // TODO uninstall mathjs
-
     if (decimalPortion) {
       const wholeNumberBIN = decToBinary(wholePortion);
       const decimalNumberBIN = decDecimalPartToBin(decimalPortion);
       const decNumberBIN = `${wholeNumberBIN}.${decimalNumberBIN}`;
 
-      console.log(wholeNumberBIN);
       const powerTo = decNumberBIN.indexOf(".") - 1;
       const withoutDot = decNumberBIN.replace(".", "");
       const decNumberBinMovedDot = `${withoutDot.substr(0, 1)}.${withoutDot.substr(1)}`;
@@ -85,7 +85,7 @@ const FpConverter: React.FC = () => {
 
       const result = IEEE754.join("");
       setBinValue(result);
-      setIEEE754({
+      setIEEE754ToBin({
         sign,
         exponent: {
           bin: exponentBIN,
@@ -99,7 +99,39 @@ const FpConverter: React.FC = () => {
     }
   };
 
-  const binaryToDecFP = (entryValueStr: string) => {};
+  const binaryToDecFP = (entryValueStr: string) => {
+    const entryValueArr = entryValueStr.split("");
+
+    if (entryValueArr.length < 32) {
+      for (let i = 0; i < 32; i++) {
+        if (typeof entryValueArr[i] !== "string") entryValueArr[i] = "0";
+      }
+    }
+    setBinValue(entryValueArr.join(""));
+
+    const sign = parseInt(entryValueArr[0]) ? "-" : "";
+    const exponent = entryValueArr.join("").slice(1, 9);
+    const exponentDEC = binaryToDec(exponent);
+    const precision = parseInt(exponentDEC) - 127;
+    const mantissa = entryValueArr.join("").slice(-23);
+    const mantissaDec = binDecimalToDec(`1.${mantissa}`);
+
+    const result = `${sign}${Math.pow(2, precision) * mantissaDec}`;
+    setDecValue(result);
+
+    setIEEE754ToDec({
+      sign: parseInt(entryValueArr[0]).toString(),
+      exponent: {
+        bin: exponent,
+        dec: parseInt(exponentDEC),
+        powerTo: precision,
+      },
+      mantissa: {
+        dec: mantissaDec,
+        bin: `1.${mantissa}`,
+      },
+    });
+  };
 
   return (
     <div className={style()}>
@@ -122,28 +154,60 @@ const FpConverter: React.FC = () => {
         </div>
       </div>
       <div className={style("iee754-representation")}>
-        <p>
-          Sign: <span>{IEEE754representation.sign || "---"}</span>
-        </p>
-        <div>
-          Exponent:
-          <span>
-            {IEEE754representation.exponent ? (
-              <div className={"exponent"}>
-                <p>
-                  2<sup>{IEEE754representation.exponent.powerTo}</sup>
-                </p>
-                <p>DEC: {IEEE754representation.exponent.dec}</p>
-                <p>BIN: {IEEE754representation.exponent.bin} </p>
-              </div>
-            ) : (
-              "---"
-            )}
-          </span>
+        <div className={"results to-bin"}>
+          <p>
+            Sign: <span>{IEEE754representationToBin.sign || "---"}</span>
+          </p>
+          <div>
+            Exponent:
+            <span>
+              {IEEE754representationToBin.exponent ? (
+                <div className={"exponent"}>
+                  <p>
+                    2<sup>{IEEE754representationToBin.exponent.powerTo}</sup>
+                  </p>
+                  <p>DEC: {IEEE754representationToBin.exponent.dec}</p>
+                  <p>BIN: {IEEE754representationToBin.exponent.bin} </p>
+                </div>
+              ) : (
+                "---"
+              )}
+            </span>
+          </div>
+          <p>
+            Mantissa: <span>{IEEE754representationToBin.mantissa?.bin || "---"}</span>
+          </p>
         </div>
-        <p>
-          Mantissa: <span>{IEEE754representation.mantissa?.bin || "---"}</span>
-        </p>
+
+        <div className={"results to-dec"}>
+          <p>
+            Sign: <span>{IEEE754representationToDec.sign || "---"}</span>
+          </p>
+          <div>
+            Exponent:
+            <span>
+              {IEEE754representationToDec.exponent ? (
+                <div className={"exponent"}>
+                  <p>
+                    2<sup>{IEEE754representationToDec.exponent.powerTo}</sup>
+                  </p>
+                  <p>DEC: {IEEE754representationToDec.exponent.dec}</p>
+                  <p>BIN: {IEEE754representationToDec.exponent.bin} </p>
+                </div>
+              ) : (
+                "---"
+              )}
+            </span>
+          </div>
+          <p>
+            Mantissa:
+            <span>
+              {IEEE754representationToDec.mantissa?.bin
+                ? `${IEEE754representationToDec.mantissa?.bin} (in DEC: ${IEEE754representationToDec.mantissa?.dec})`
+                : "---"}
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );

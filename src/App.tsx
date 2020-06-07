@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { default as bemCssModules } from "bem-css-modules";
@@ -16,15 +16,28 @@ bemCssModules.setSettings({
   throwOnError: true,
 });
 
-export const App: React.FC = () => (
-  <Provider store={store}>
-    <div className="app">
-      <BrowserRouter>
-        {/* <Header />
-				<Content /> */}
-        <Converter />
-        <FpConverter />
-      </BrowserRouter>
-    </div>
-  </Provider>
-);
+export const App: React.FC = () => {
+  const [integersOrReal, setIntegersOrReal] = useState<"real" | "integers">("real");
+  return (
+    <Provider store={store}>
+      <div className="app">
+        <BrowserRouter>
+          {/* <Header />
+          <Content /> */}
+          <div className="btnsBox">
+            <button className="chooseType" onClick={() => setIntegersOrReal("real")}>
+              Real number
+            </button>
+            <button className="chooseType" onClick={() => setIntegersOrReal("integers")}>
+              Integers number
+            </button>
+          </div>
+          {integersOrReal === "integers" && <Converter />}
+          {integersOrReal === "real" && <FpConverter />}
+
+          <footer>Author: Filip Lipiński</footer>
+        </BrowserRouter>
+      </div>
+    </Provider>
+  );
+};

@@ -15,7 +15,6 @@
   &__labeled-input {
     display: flex;
     flex-direction: column;
-    width: 200px;
     margin: 1em;
   }
 
@@ -30,7 +29,8 @@
   }
 
   input {
-    padding: 1em;
+    width: 20em;
+    padding: 0.5em;
   }
 
   input#bin {

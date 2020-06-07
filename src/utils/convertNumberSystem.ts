@@ -1,5 +1,3 @@
-import math from "mathjs";
-
 export const decToBinary = (entryDecValue: string | number) => {
   let entryValue = typeof entryDecValue === "string" ? parseFloat(entryDecValue) : entryDecValue;
   let result = "0";
@@ -36,9 +34,6 @@ export const binaryToDec = (entryValue: string) => {
 // fixed-point:
 // example input: 0.125
 export const decDecimalPartToBin = (entryDecimalNumber: string) => {
-  // const decimalPortion = entryDecimalPortion.includes(".")
-  //   ? entryDecimalPortion
-  //   : `0.${entryDecimalPortion}`;
   const decimalPortion = `0.${entryDecimalNumber}`;
 
   let entry = parseFloat(decimalPortion);
@@ -49,6 +44,7 @@ export const decDecimalPartToBin = (entryDecimalNumber: string) => {
     entry = entry * 2;
 
     if (usedDecimals.includes(entry.toString())) break;
+    if (usedDecimals.length > 1000) break; // infinite loop security
 
     const [, decimal] = entry.toString().split(".");
     if (decimal) usedDecimals.push(decimal);
@@ -62,4 +58,16 @@ export const decDecimalPartToBin = (entryDecimalNumber: string) => {
   const result = resultArr.join("");
 
   return result;
+};
+
+// fixed-point
+// example input: 1.01010110
+export const binDecimalToDec = (entryBin: string) => {
+  const numberSystem = 2;
+  const [integerRaw, decimalRaw = ""] = entryBin.trim().split(".");
+
+  const integer = parseInt(integerRaw.replace("-", ""), numberSystem);
+  const decimal = decimalRaw.split("").reduceRight((sum, num) => (sum + parseInt(num, numberSystem)) / numberSystem, 0);
+
+  return (integerRaw.startsWith("-") ? -1 : 1) * (integer + decimal);
 };
