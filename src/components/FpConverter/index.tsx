@@ -55,48 +55,46 @@ const FpConverter: React.FC = () => {
 
     const [wholePortion, decimalPortion] = entryDecValue.split(".");
 
-    if (decimalPortion) {
-      const wholeNumberBIN = decToBinary(wholePortion);
-      const decimalNumberBIN = decDecimalPartToBin(decimalPortion);
-      const decNumberBIN = `${wholeNumberBIN}.${decimalNumberBIN}`;
+    const wholeNumberBIN = decToBinary(wholePortion);
+    const decimalNumberBIN = decDecimalPartToBin(decimalPortion || "0");
+    const decNumberBIN = `${wholeNumberBIN}.${decimalNumberBIN}`;
 
-      const powerTo = decNumberBIN.indexOf(".") - 1;
-      const withoutDot = decNumberBIN.replace(".", "");
-      const decNumberBinMovedDot = `${withoutDot.substr(0, 1)}.${withoutDot.substr(1)}`;
+    const powerTo = decNumberBIN.indexOf(".") - 1;
+    const withoutDot = decNumberBIN.replace(".", "");
+    const decNumberBinMovedDot = `${withoutDot.substr(0, 1)}.${withoutDot.substr(1)}`;
 
-      // 127 because of it's single precision algorithm, for double precision 64bit i will be 1023
-      const exponentDEC = 127 + powerTo;
-      const exponentBIN = decToBinary(exponentDEC);
+    // 127 because of it's single precision algorithm, for double precision 64bit i will be 1023
+    const exponentDEC = 127 + powerTo;
+    const exponentBIN = decToBinary(exponentDEC);
 
-      exponentBIN.split("").forEach((bin) => IEEE754.push(bin));
+    exponentBIN.split("").forEach((bin) => IEEE754.push(bin));
 
-      const [, mantissa] = decNumberBinMovedDot.split(".");
+    const [, mantissa] = decNumberBinMovedDot.split(".");
 
-      mantissa.split("").forEach((bin) => IEEE754.push(bin));
+    mantissa.split("").forEach((bin) => IEEE754.push(bin));
 
-      if (IEEE754.length < 32) {
-        for (let i = 0; i < 32; i++) {
-          if (typeof IEEE754[i] !== "string") IEEE754[i] = "0";
-        }
-      } else if (IEEE754.length > 32) {
-        IEEE754.length = 32;
-        IEEE754[31] = "1"; //cause of repeated mantissa
+    if (IEEE754.length < 32) {
+      for (let i = 0; i < 32; i++) {
+        if (typeof IEEE754[i] !== "string") IEEE754[i] = "0";
       }
-
-      const result = IEEE754.join("");
-      setBinValue(result);
-      setIEEE754ToBin({
-        sign,
-        exponent: {
-          bin: exponentBIN,
-          dec: exponentDEC,
-          powerTo,
-        },
-        mantissa: {
-          bin: decNumberBinMovedDot.slice(0, 16),
-        },
-      });
+    } else if (IEEE754.length > 32) {
+      IEEE754.length = 32;
+      IEEE754[31] = "1"; //cause of repeated mantissa
     }
+
+    const result = IEEE754.join("");
+    setBinValue(result);
+    setIEEE754ToBin({
+      sign,
+      exponent: {
+        bin: exponentBIN,
+        dec: exponentDEC,
+        powerTo,
+      },
+      mantissa: {
+        bin: decNumberBinMovedDot.slice(0, 16),
+      },
+    });
   };
 
   const binaryToDecFP = (entryValueStr: string) => {
