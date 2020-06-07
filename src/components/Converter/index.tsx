@@ -10,11 +10,14 @@ const Converter: React.FC = () => {
 
   const inputOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value || "0";
+    const onlyNumbers = new RegExp("^[0-9]*$");
     const only0and1 = new RegExp(/^[01]+$/g);
 
     if (e.target.id === "dec") {
-      setDecValue(value);
-      setBinValue(decToBinary(value));
+      if (onlyNumbers.test(value)) {
+        setDecValue(value);
+        setBinValue(decToBinary(value));
+      }
     } else if (e.target.id === "bin") {
       if (only0and1.test(value)) {
         setBinValue(value);
@@ -44,7 +47,7 @@ const Converter: React.FC = () => {
   const binaryToDec = (entryValueStr: string) => {
     let result = 0;
 
-    if (binValue) {
+    if (entryValueStr) {
       let j = 0;
       for (let i = entryValueStr.length; i > 0; i--) {
         const n = parseInt(entryValueStr[i - 1]);
@@ -58,6 +61,7 @@ const Converter: React.FC = () => {
 
   return (
     <div className={style()}>
+      <h1>Converter integer number to binary and vice versa</h1>
       <div className={style("container")}>
         <div className={style("labeled-input")}>
           <label htmlFor="dec">Decimal number</label>

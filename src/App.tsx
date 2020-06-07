@@ -5,6 +5,7 @@ import { default as bemCssModules } from "bem-css-modules";
 import { Content } from "./components/Content/Content";
 import { Header } from "./components/Header/Header";
 import Converter from "./components/Converter";
+import FpConverter from "./components/FpConverter";
 import { store } from "./stores/store";
 
 import "./App.css";
@@ -22,6 +23,7 @@ export const App: React.FC = () => (
         {/* <Header />
 				<Content /> */}
         <Converter />
+        <FpConverter />
       </BrowserRouter>
     </div>
   </Provider>
