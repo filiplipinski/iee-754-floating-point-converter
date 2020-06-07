@@ -1,7 +1,7 @@
 {
-  "name": "converter-react",
+  "name": "IEEE-754-Floating-Point-Converter",
   "version": "1.0.0",
-  "description": "Konwerter liczb całkowitych i rzeczywistych (zapis zmiennopozycyjny) na i z postaci binarnej z implementacją podstawowych operacji",
+  "description": "Konwerter liczb całkowitych i rzeczywistych (zapis zmiennopozycyjny) na i z postaci binarnej",
   "main": "index.ts",
   "scripts": {
     "start": "webpack-dev-server --mode=development",
